@@ -2,6 +2,7 @@ package com.example.tasklist.repository;
 
 import com.example.tasklist.domain.user.Role;
 import com.example.tasklist.domain.user.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
