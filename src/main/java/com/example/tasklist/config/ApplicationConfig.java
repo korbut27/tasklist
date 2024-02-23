@@ -2,8 +2,12 @@ package com.example.tasklist.config;
 
 import com.example.tasklist.web.security.JwtTokenFilter;
 import com.example.tasklist.web.security.JwtTokenProvider;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,18 +41,38 @@ public class ApplicationConfig {
     }
 
     @Bean
-    @SneakyThrows
     public AuthenticationManager authenticationManager(
             final AuthenticationConfiguration configuration
-    ) {
+    ) throws Exception {
         return configuration.getAuthenticationManager();
     }
 
     @Bean
-    @SneakyThrows
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("bearerAuth"))
+                .components(
+                        new Components()
+                                .addSecuritySchemes("bearerAuth",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
+                )
+                .info(new Info()
+                        .title("Task list API")
+                        .description("Demo Spring Boot application")
+                        .version("1.0")
+                );
+    }
+
+
+    @Bean
     public SecurityFilterChain filterChain(
             final HttpSecurity httpSecurity
-    ) {
+    ) throws Exception {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
